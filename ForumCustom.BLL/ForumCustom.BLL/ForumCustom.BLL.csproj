@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ForumCustom.DAL\ForumCustom.DAL.Contract\ForumCustom.DAL.Contract.csproj" />
+    <ProjectReference Include="..\..\ForumCustom.DAL\ForumCustom.DAL.Entities\ForumCustom.DAL.Entities.csproj" />
+    <ProjectReference Include="..\..\ForumCustom.DAL\ForumCustom.DAL\ForumCustom.DAL.csproj" />
+    <ProjectReference Include="..\ForumCustom.BLL.Contract\ForumCustom.BLL.Contract.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,35 @@
+﻿@model IEnumerable<ForumCustom.BLL.DTO.CommentInfo>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<table class="table">
+    <thead>
+        <tr>
+
+            <th>
+                @Html.DisplayNameFor(model => model.Comment)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+
+                    <div>
+                        <div class="text-left">     @Html.DisplayFor(modelItem => item.Comment)</div>
+                    </div>
+
+                    <span class="text-left"> @Html.ActionLink("Details", "Details", new { id = item.Id })</span>
+
+                    <span class="text-left"> @Html.ActionLink("Edit", "Edit", new { id = item.Id }) </span>
+
+                    <span class="text-left">     @Html.ActionLink("Delete", "Delete", new { id = item.Id })</span>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

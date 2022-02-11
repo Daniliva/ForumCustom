@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <SonarQubeExclude>True</SonarQubeExclude>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ForumCustom.BLL\ForumCustom.BLL.Contract\ForumCustom.BLL.Contract.csproj" />
+    <ProjectReference Include="..\..\ForumCustom.BLL\ForumCustom.BLL.DTO\ForumCustom.BLL.DTO.csproj" />
+    <ProjectReference Include="..\..\ForumCustom.BLL\ForumCustom.BLL\ForumCustom.BLL.csproj" />
+    <ProjectReference Include="..\ForumCustom.WEB.Domain\ForumCustom.WEB.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
+  </ItemGroup>
+
+</Project>

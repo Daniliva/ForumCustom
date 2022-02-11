@@ -1,0 +1,35 @@
+﻿@model IEnumerable<ForumCustom.BLL.DTO.TopicInfo>
+
+@{
+    ViewData["Title"] = "YourTopic";}
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<div class="col-md-12">
+    @foreach (var item in Model)
+    {
+
+        <div class="col">@Html.DisplayFor(modelItem => item.Name)  <hr></div>
+
+        @Html.Raw("<pre>" + Html.Encode(item.Text) + "</pre>")
+        <div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="text-left">    by @Html.DisplayFor(modelItem => item.Nickname)</div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-right">     @Html.DisplayFor(modelItem => item.Status)</div>
+                </div>
+            </div>
+
+            <span class="text-left"> @Html.ActionLink("Details", "Details", new { id = item.Id })</span>
+
+            <span class="text-left"> @Html.ActionLink("Edit", "Edit", new { id = item.Id }) </span>
+
+            <span class="text-left">     @Html.ActionLink("Delete", "Delete", new { id = item.Id })</span>
+        </div>
+        <hr>
+
+    }
+</div>
