@@ -12,4 +12,23 @@ namespace ForumCustom.WEB.Domain.Transform
             return new UserModel() { Login = item.Login, ModifyTime = item.ModifyTime, UserId = item.UserId, Roles = String.Join(", ", item.Role.ToArray()) };
         }
     }
+
+    public class MemberTransform : ITransform<MemberModel, MemberInfo>
+    {
+        public MemberModel Transform(MemberInfo item)
+        {
+            return new MemberModel()
+            {
+                MemberId = item.MemberId,
+                CreateTime = item.CreateTime,
+                DateOfBirth = item.DateOfBirth,
+                Email = item.Email,
+                FirstName = item.FirstName,
+                IsActive = item.IsActive,
+                LastName = item.LastName,
+                ModifyTime = item.ModifyTime,
+                NickName = item.NickName
+            };
+        }
+    }
 }

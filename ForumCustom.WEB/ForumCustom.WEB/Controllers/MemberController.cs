@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using ForumCustom.WEB.Domain.Transform;
 
 namespace ForumCustom.WEB.Controllers
 {
@@ -13,15 +14,20 @@ namespace ForumCustom.WEB.Controllers
         // GET: MemberController
         private readonly IUserManager _userManager;
 
+        private readonly MemberTransform _memberTransform;
         private readonly IMemberManager _memberManager;
 
         public MemberController(IUserManager userManager, IMemberManager memberManager)
         {
             this._userManager = userManager;
             this._memberManager = memberManager;
+            _memberTransform = new MemberTransform();
         }
 
-        // GET: MemberController/Details/5
+        /// <summary>
+        /// Return account info for authorize user
+        /// </summary>
+        /// <returns></returns>
         [Authorize]
         public async Task<ActionResult> Details()
         {
@@ -32,7 +38,10 @@ namespace ForumCustom.WEB.Controllers
             return View(member);
         }
 
-        // GET: MemberController/Create
+        /// <summary>
+        /// Return form for change or create account
+        /// </summary>
+        /// <returns></returns>
         [Authorize]
         public async Task<ActionResult> Create()
         {
@@ -40,10 +49,14 @@ namespace ForumCustom.WEB.Controllers
             var user = await _userManager.GetUserByLogin(name);
 
             var member = await _memberManager.GetMemberInfo(user);
-            return View(member);
+            return View(_memberTransform.Transform(member));
         }
 
-        // POST: MemberController/Create
+        /// <summary>
+        /// Create or change account for authorize user
+        /// </summary>
+        /// <param name="collection"></param>
+        /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(MemberInfo collection)

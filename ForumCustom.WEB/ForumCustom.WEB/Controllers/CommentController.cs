@@ -16,6 +16,7 @@ namespace ForumCustom.WEB.Controllers
         private readonly IMemberManager _memberManager;
         private readonly ICommentManager _commentManager;
         private readonly CommentTopicModelTransform _commentTopicModelTransform;
+        private readonly CommentTransform _commentTransform;
 
         public CommentController(ITopicManager topicManager, IMemberManager memberManager, IUserManager userManager, ICommentManager commentManager)
         {
@@ -23,6 +24,7 @@ namespace ForumCustom.WEB.Controllers
             _memberManager = memberManager;
             _userManager = userManager;
             _commentManager = commentManager;
+            _commentTransform = new CommentTransform();
             _commentTopicModelTransform = new CommentTopicModelTransform();
         }
 
@@ -33,6 +35,10 @@ namespace ForumCustom.WEB.Controllers
             var user = await _userManager.GetUserByLogin(name);
 
             var member = await _memberManager.GetMemberInfo(user);
+            if (member.NickName == null)
+            {
+                return RedirectToAction("Create", "Member");
+            }
             return View(await _commentManager.GetByNickName(member.NickName));
         }
 
@@ -42,6 +48,10 @@ namespace ForumCustom.WEB.Controllers
             var name = HttpContext.User.Identity.Name;
             var user = await _userManager.GetUserByLogin(name);
             var member = await _memberManager.GetMemberInfo(user);
+            if (member.NickName == null)
+            {
+                return RedirectToAction("Create", "Member");
+            }
             var comment = _commentTopicModelTransform.Transform(await _commentManager.GetTopicByIdComment(id));
             var commentFind = await _commentManager.GetByNickNameId(member.NickName, id);
             comment.NickName = commentFind.Nickname;
@@ -59,8 +69,13 @@ namespace ForumCustom.WEB.Controllers
             var user = await _userManager.GetUserByLogin(name);
 
             var member = await _memberManager.GetMemberInfo(user);
+            if (member.NickName == null)
+            {
+                return RedirectToAction("Create", "Member");
+            }
             var comment = await _commentManager.GetByNickNameId(member.NickName, id);
-            return View(comment);
+
+            return View(_commentTransform.Transform(comment));
         }
 
         // POST: CommentController/Edit/5
@@ -74,6 +89,10 @@ namespace ForumCustom.WEB.Controllers
                 var user = await _userManager.GetUserByLogin(name);
 
                 var member = await _memberManager.GetMemberInfo(user);
+                if (member.NickName == null)
+                {
+                    return RedirectToAction("Create", "Member");
+                }
                 collection.Nickname = member.NickName;
                 await _commentManager.ChangeComment(collection);
                 return RedirectToAction(nameof(Index));

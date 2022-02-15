@@ -20,6 +20,10 @@ namespace ForumCustom.WEB.Controllers
         private readonly UserTransform _userTransform;
         private readonly UserRoleTransform _userRoleTransform;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="userManager"></param>
         public UserController(IUserManager userManager)
         {
             this._userManager = userManager;
@@ -27,7 +31,10 @@ namespace ForumCustom.WEB.Controllers
             this._userTransform = new UserTransform();
         }
 
-        // GET: UserController
+        /// <summary>
+        /// Return list of users and available only for users who have admin role
+        /// </summary>
+        /// <returns>View with list of users</returns>
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Index()
         {
@@ -35,12 +42,33 @@ namespace ForumCustom.WEB.Controllers
             return View(list.Select(x => _userTransform.Transform(x)));
         }
 
+        /// <summary>
+        /// Return form for Registration user after get request
+        /// </summary>
+        /// <returns>View form for Registration</returns>
         public ActionResult Registration()
         {
             return View();
         }
 
-        // POST: UserController/Create
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>View user</returns>
+        public async Task<ActionResult> Details()
+        {
+            var identity = HttpContext.User.Identity;
+
+            var user = await _userManager.GetUserByLogin(identity.Name);
+            return View(_userTransform.Transform(user));
+        }
+
+        /// <summary>
+        /// Get information for registration and registration user in system with role "User"
+        /// Redirect to login method, if registration was successful or return form if not
+        /// </summary>
+        /// <param name="collection"></param>
+        /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Registration(LoginInfo collection)
@@ -48,7 +76,7 @@ namespace ForumCustom.WEB.Controllers
             try
             {
                 await _userManager.RegistrationUserInfo(collection.Login, collection.Password);
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Login));
             }
             catch
             {
@@ -56,12 +84,20 @@ namespace ForumCustom.WEB.Controllers
             }
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>Return form for login user</returns>
         public ActionResult Login()
         {
             return View();
         }
 
-        // POST: UserController/Create
+        /// <summary>
+        /// Enter user in system or return form
+        /// </summary>
+        /// <param name="collection">Entities consists of login and password</param>
+        /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginInfo collection)
@@ -105,12 +141,20 @@ namespace ForumCustom.WEB.Controllers
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(listClaimsIdentities));
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns>Return from for change user login or password</returns>
         public ActionResult Change()
         {
             return View();
         }
 
-        // POST: UserController/Edit/5
+        /// <summary>
+        /// Change user use entities LoginChangeModel
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Change(LoginChangeModel item)
@@ -119,7 +163,7 @@ namespace ForumCustom.WEB.Controllers
             {
                 var user = await _userManager.Login(item.Login, item.Password);
                 await _userManager.ChangeUser(user, item.NewPassword, item.NewLogin);
-                return RedirectToAction(nameof(Logout));
+                return RedirectToAction(nameof(Change));
             }
             catch
             {
@@ -127,6 +171,11 @@ namespace ForumCustom.WEB.Controllers
             }
         }
 
+        /// <summary>
+        /// Return info user with information
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>Return form user with information</returns>
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult> ChangeRoles(int id)
         {
@@ -137,7 +186,11 @@ namespace ForumCustom.WEB.Controllers
             return View(d);
         }
 
-        // POST: UserController/Edit/5await _userManager.GetId(id)
+        /// <summary>
+        /// Change role for user
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         [HttpPost]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult> ChangeRoles(UserRoleModel user)
@@ -157,6 +210,10 @@ namespace ForumCustom.WEB.Controllers
             }
         }
 
+        /// <summary>
+        /// Exit user and redirect to login form
+        /// </summary>
+        /// <returns></returns>
         [Authorize]
         public async Task<IActionResult> Logout()
         {

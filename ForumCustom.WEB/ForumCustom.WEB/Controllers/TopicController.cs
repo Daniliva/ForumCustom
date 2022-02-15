@@ -27,13 +27,20 @@ namespace ForumCustom.WEB.Controllers
             _topicTransform = new TopicTransform();
         }
 
-        // GET: TopicController
+        /// <summary>
+        /// Return all topic
+        /// </summary>
+        /// <returns></returns>
 
         public async Task<ActionResult> Index()
         {
             return View((await _topicManager.GetAll()));
         }
 
+        /// <summary>
+        /// Return list of topic for author only her/his
+        /// </summary>
+        /// <returns></returns>
         [Authorize(Roles = "Author")]
         public async Task<ActionResult> YourTopic()
         {
@@ -43,20 +50,36 @@ namespace ForumCustom.WEB.Controllers
             return View(await _topicManager.GetByNickName(member.NickName));
         }
 
-        // GET: TopicController/Details/5
+        /// <summary>
+        /// Return information about topic and comment
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public async Task<ActionResult> Details(int id)
         {
             var topic = await _topicManager.GetById(id);
             return View(_topicTransform.Transform(topic));
         }
 
+        /// <summary>
+        /// Add new comment to topic
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="commentInfo"></param>
+        /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Details(int id, CommentInfo commentInfo)
         {
             string? name = HttpContext.User.Identity.Name;
+
             var user = await _userManager.GetUserByLogin(name);
             var member = await _memberManager.GetMemberInfo(user);
+
+            if (member.NickName == null)
+            {
+                return RedirectToAction(nameof(Create), "Member");
+            }
             commentInfo.Nickname = member.NickName;
             commentInfo.Id = 0;
             var topic = await _topicManager.GetById(id);
@@ -65,7 +88,10 @@ namespace ForumCustom.WEB.Controllers
             return View(_topicTransform.Transform(topic));
         }
 
-        // GET: TopicController/Create
+        /// <summary>
+        /// Return form for create topic
+        /// </summary>
+        /// <returns></returns>
         [Authorize(Roles = "Author")]
         public async Task<ActionResult> Create()
         {
@@ -79,7 +105,11 @@ namespace ForumCustom.WEB.Controllers
             return View();
         }
 
-        // POST: TopicController/Create
+        /// <summary>
+        /// Create topic
+        /// </summary>
+        /// <param name="collection"></param>
+        /// <returns></returns>
         [HttpPost]
         [Authorize(Roles = "Author")]
         [ValidateAntiForgeryToken]
@@ -98,20 +128,32 @@ namespace ForumCustom.WEB.Controllers
             }
         }
 
-        // GET: TopicController/Edit/5
+        /// <summary>
+        /// Return form for change topic
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [Authorize(Roles = "Author")]
         public async Task<ActionResult> Edit(int id)
         {
             var name = HttpContext.User.Identity.Name;
             var user = await _userManager.GetUserByLogin(name);
             var member = await _memberManager.GetMemberInfo(user);
+            if (member.NickName == null)
+            {
+                return RedirectToAction(nameof(Create), "Member");
+            }
             var d = _topicManager.GetStatusDictionary().Result.Select(x => x.Value);
             var topic = _topicManager.GetById(id).Result;
             ViewBag.Companies = new SelectList(d, topic.Status);
             return View(topic);
         }
 
-        // POST: TopicController/Edit/5
+        /// <summary>
+        /// Change topic info
+        /// </summary>
+        /// <param name="collection"></param>
+        /// <returns></returns>
         [HttpPost]
         [Authorize(Roles = "Author")]
         [ValidateAntiForgeryToken]
@@ -122,6 +164,10 @@ namespace ForumCustom.WEB.Controllers
                 var name = HttpContext.User.Identity.Name;
                 var user = await _userManager.GetUserByLogin(name);
                 var member = await _memberManager.GetMemberInfo(user);
+                if (member.NickName == null)
+                {
+                    return RedirectToAction(nameof(Create), "Member");
+                }
                 var topic = await _topicManager.GetById(collection.Id);
                 if (topic.Nickname == member.NickName)
                 {
@@ -135,16 +181,24 @@ namespace ForumCustom.WEB.Controllers
             }
         }
 
-        // GET: TopicController/Delete/5
-        [Authorize(Roles = "Author")]
+        /// <summary>
+        /// Return form for delete topic
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Delete(int id)
         {
             return View(await _topicManager.GetById(id));
         }
 
-        // POST: TopicController/Delete/5
+        /// <summary>
+        /// Delete topic
+        /// </summary>
+        /// <param name="topic"></param>
+        /// <returns></returns>
         [HttpPost]
-        [Authorize(Roles = "Author")]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(TopicInfo topic)
         {

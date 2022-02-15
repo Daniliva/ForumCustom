@@ -23,6 +23,9 @@ export default function register() {
         // The URL constructor is available in all browsers that support SW.
         const url = process.env.PUBLIC_URL as string;
         const publicUrl = new URL(url, window.location.toString());
+        console.log(url);
+        console.log(publicUrl);
+        var r = 0 + 1;
         if (publicUrl.origin !== window.location.origin) {
             // Our service worker won't work if PUBLIC_URL is on a different origin
             // from what our page is served on. This might happen if a CDN is used to
@@ -47,6 +50,7 @@ export default function register() {
 function registerValidSW(swUrl: string) {
     navigator.serviceWorker
         .register(swUrl)
+
         .then(registration => {
             registration.onupdatefound = () => {
                 const installingWorker = registration.installing as ServiceWorker;

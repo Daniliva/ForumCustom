@@ -52,7 +52,6 @@ namespace ForumCustom.BLL.Manager
 
         public async Task<bool> AddTopic(TopicInfo topicInfo, UserInfo userInfo)
         {
-            // topicInfo.Status = Status.Done;
             var topic = _topicTransform.Transform(topicInfo);
             var memberFind = _memberRepository
                 .FindAsync(member => member.User.Id == userInfo.UserId && member.User.Login == userInfo.Login)
@@ -63,9 +62,13 @@ namespace ForumCustom.BLL.Manager
             return true;
         }
 
+        /// <summary>
+        /// Prepare and change information for topic
+        /// </summary>
+        /// <param name="topicInfo"></param>
+        /// <returns></returns>
         public async Task<bool> ChangeTopic(TopicInfo topicInfo)
         {
-            // topicInfo.Status = Status.Done;
             var topic = await _topicRepository.Get(topicInfo.Id);
             var topicChange = _topicTransform.Transform(topicInfo);
 
@@ -78,7 +81,6 @@ namespace ForumCustom.BLL.Manager
 
         public async Task<bool> AddCommentToTopic(TopicInfo topicInfo, CommentInfo comment)
         {
-            // topicInfo.Status = Status.Done;
             var topic = await _topicRepository.Get(topicInfo.Id);
             var commentNew = _commentTransform.Transform(comment);
             commentNew.Member = _memberRepository.FindAsync(x => x.Nickname == comment.Nickname).Result.First();
